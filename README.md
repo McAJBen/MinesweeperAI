@@ -3,6 +3,14 @@ This AI works using linear algebra to compute all the possibilities of mine plac
 
 Solving Minesweeper is NP-complete based on work by Richard Kaye [Here](http://web.mat.bham.ac.uk/R.W.Kaye/minesw/ordmsw.htm) and [This](http://www.minesweeper.info/articles/MillionDollarMinesweeper.pdf). But since N is small most solutions *should* be solvable in our lifetime.
 
+## Testing
+
+Begginer: 90.6% correct (920,851 / 1,016,600)
+
+Intermediate: 76.6% correct (772,289 / 1,008,853)
+
+Expert: 38.1% correct (135,488 / 355,608)
+
 <img src="Examples/Example1.png" alt="MinesweeperAI Example">
 
 ## Stages of solving
