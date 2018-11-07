@@ -9,7 +9,7 @@ Begginer: 90.6% correct (920,851 / 1,016,600)
 
 Intermediate: 76.6% correct (772,289 / 1,008,853)
 
-Expert: 38.1% correct (135,488 / 355,608)
+Expert: 38.1% correct (591,436 / 1,552,205)
 
 <img src="Examples/Example1.png" alt="MinesweeperAI Example">
 
