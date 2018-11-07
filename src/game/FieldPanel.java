@@ -5,17 +5,15 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import ai.AI;
-
 public class FieldPanel extends JPanel {
 
 	private static final long serialVersionUID = 7588679733829997285L;
 	private final Field field;
-	private final AI ai;
+	private final FieldView fieldView;
 	
-	public FieldPanel(Field field, AI ai) {
+	public FieldPanel(Field field, FieldView fieldView) {
 		this.field = field;
-		this.ai = ai;
+		this.fieldView = fieldView;
 	}
 	
 	@Override
@@ -23,8 +21,8 @@ public class FieldPanel extends JPanel {
 		super.paint(g);
 		Dimension size = getSize();
 		field.paint(g, size);
-		if (ai != null) {
-			ai.paint(g, size);
+		if (fieldView != null) {
+			fieldView.paint(g, size);
 		}
 	}
 }

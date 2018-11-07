@@ -34,7 +34,7 @@ If Stage 1 was unsuccessful at finding and new information in-depth analysis is 
 
 1. A Matrix is created from the rules and using standard row operations the probability that each square is a mine is calculated. I really don't remember how this works as I wrote it 2 years ago. This 
 
-2. If no perfect solution is found (square that is either 100% mine or empty) then the best possible solution is picked. This best solution is the square with the lowest possibility of being a mine (It might be better to flag a square that has a higher possibility of being a mine, but this could lead to it failing in the future on a 'perfect' solution). This is calculated by using the amount of combinations of each possible solution where that square is a mine. The need for grouping similar squares together and using BigInteger is created because of the amount of possibilities in the unknown squares that are not near numbered squares. Sometimes it is better to click a purely unknown square rather than the ones where you know little information. In this case the magenta squares near the Needed squares are prioritized because it could help to solve more unknowns.
+2. If no perfect solution is found (square that is either 100% mine or empty) then the best possible solution is picked. This best solution is the square with the lowest possibility of being a mine (It might be better to flag a square that has a higher possibility of being a mine, but this could lead to it failing in the future on a 'perfect' solution). This is calculated by using the amount of combinations of each possible solution where that square is a mine. The need for grouping similar squares together and using BigInteger is created because of the amount of possibilities in the unknown squares that are not near numbered squares. Sometimes it is better to click a purely unknown square rather than the ones where you know little information. In the case of a tie, the square which is nearest to the top left is clicked. This seems to be the best in testing, maybe because it helps to reveal more of the board and solve other problems.
 
 ## Additional
 In a trial this AI solved 135,488 expert games out of 355,608 which makes a win rate of 38.1% +/- 0.1%.
@@ -48,6 +48,6 @@ Resources
 
 [Link](http://nothings.org/games/minesweeper/)
 
-Similar methadology as [This paper](http://www.minesweeper.info/articles/MinesweeperStatisticalComputationalAnalysis.pdf) on page 21 "level 3". Except they claim it is "not practical for any computer known to man"
+Similar methadology as [This paper](http://www.minesweeper.info/articles/MinesweeperStatisticalComputationalAnalysis.pdf) on page 21 "level 2 Perimeter Strategy".
 
 

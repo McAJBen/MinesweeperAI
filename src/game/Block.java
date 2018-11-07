@@ -44,7 +44,7 @@ public class Block {
 		}
 	}
 
-	public void paint(Graphics g, boolean showMines, int x, int y, int width, int height) {
+	public void paint(Graphics g, boolean showMines, boolean cheat, int x, int y, int width, int height) {
 		if (isClear) {
 			paintClear(g, x, y, width, height);
 		}
@@ -58,7 +58,7 @@ public class Block {
 			g.drawImage(blank, x, y, width, height, null);
 		}
 		paintBorder(g, x, y, width, height);
-		if (isMine) {
+		if (cheat && isMine) {
 			g.setColor(Color.RED);
 			g.fillRect(x, y, width / 4, height / 4);
 		}
@@ -123,5 +123,16 @@ public class Block {
 	public byte getNearbyMines() {
 		return nearbyMines;
 	}
-
+	
+	public BlockData getBlockData() {
+		if (isClear) {
+			return BlockData.values()[nearbyMines];
+		}
+		else if (isFlagged) {
+			return BlockData.FLAGGED;
+		}
+		else {
+			return BlockData.UNKNOWN;
+		}
+	}
 }

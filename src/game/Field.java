@@ -16,17 +16,15 @@ public class Field {
 	private int minesLeft;
 	private boolean created;
 	private boolean lost;
+	private boolean cheatMode;
 	private Block blocks[][];
 	
-	public Field(FieldDifficulty fd) {
-		this(fd.width, fd.height, fd.mines);
-	}
-	
-	public Field(int w, int h, int m) {
-		this.width = w;
-		this.height = h;
-		this.totalMines = m;
+	public Field(int width, int height, int mines, boolean cheatMode) {
+		this.width = width;
+		this.height = height;
+		this.totalMines = mines;
 		blocks = new Block[width][height];
+		this.cheatMode = cheatMode;
 		reset();
 	}
 	
@@ -41,14 +39,12 @@ public class Field {
 		created = false;
 	}
 
-	
-
 	public synchronized void paint(Graphics g, Dimension size) {
 		final double pixelW = (double)size.width / width;
 		final double pixelH = (double)size.height / height;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				blocks[i][j].paint(g, lost,
+				blocks[i][j].paint(g, lost, cheatMode,
 						(int)(i * pixelW),
 						(int)(j * pixelH),
 						(int)((i + 1) * pixelW) - (int)(i * pixelW),
@@ -56,8 +52,6 @@ public class Field {
 			}
 		}
 	}
-	
-	
 	
 	public void FlagBlock(Point point, Dimension dimension) {
 		synchronized (blocks) {
@@ -96,8 +90,6 @@ public class Field {
 		}
 	}
 	
-	
-
 	public boolean checkWon() {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -125,7 +117,7 @@ public class Field {
 			BlockData[][] bd = new BlockData[width][height];
 			for (int i = 0; i < width; i++) {
 				for (int j = 0; j < height; j++) {
-					bd[i][j] = new BlockData(blocks[i][j].isClear, blocks[i][j].isFlagged, blocks[i][j].getNearbyMines());
+					bd[i][j] = blocks[i][j].getBlockData();
 				}
 			}
 			return bd;
