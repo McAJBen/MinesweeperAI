@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.LinkedList;
 
 import game.Click;
+import game.ClickType;
 
 public class RuleSet {
 
@@ -35,7 +36,7 @@ public class RuleSet {
 		for (Rule r: bases) {
 			if (r.getPoints().size() == r.getMines()) {
 				for (Point p: r.getPoints()) {
-					Click c = new Click(false, p);
+					Click c = new Click(ClickType.FLAG, p);
 					if (!clicks.contains(c)) {
 						clicks.add(c);
 					}
@@ -43,7 +44,7 @@ public class RuleSet {
 			}
 			if (r.getMines() == 0) {
 				for (Point p: r.getPoints()) {
-					Click c = new Click(true, p);
+					Click c = new Click(ClickType.REVEAL, p);
 					if (!clicks.contains(c)) {
 						clicks.add(c);
 					}

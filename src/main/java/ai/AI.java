@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import game.BlockData;
 import game.Click;
+import game.ClickType;
 import game.FieldView;
 
 public class AI {
@@ -22,7 +23,7 @@ public class AI {
 		LinkedList<Click> clickPoints = new LinkedList<>();
 		
 		if (isFirstClick(blockData)) {
-			clickPoints.add(new Click(true, 0, 0));
+			clickPoints.add(new Click(ClickType.REVEAL, 0, 0));
 			return clickPoints;
 		}
 		
@@ -110,12 +111,12 @@ public class AI {
 				subShittyPercent[i] /= points.get(i).size();
 				if (subShittyPercent[i] >= 1) {
 					for (Point p: points.get(i)) {
-						clicks.add(new Click(false, p));
+						clicks.add(new Click(ClickType.FLAG, p));
 					}
 				}
 				else if (subShittyPercent[i] <= 0) {
 					for (Point p: points.get(i)) {
-						clicks.add(new Click(true, p));
+						clicks.add(new Click(ClickType.REVEAL, p));
 					}
 				}
 			}
@@ -176,7 +177,7 @@ public class AI {
 				bestPointList.addAll(pts.get(i));
 			}
 		}
-		return new Click(true, closestToCorner(bestPointList));
+		return new Click(ClickType.REVEAL, closestToCorner(bestPointList));
 	}
 	
 	private Point closestToCorner(LinkedList<Point> bestPointList) {

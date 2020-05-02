@@ -103,10 +103,10 @@ public class Game {
 		if (controller == GameController.AI) {
 			LinkedList<Click> clicks = ai.solve(field.getBoard(), field.getMinesLeft());
 			for (Click c: clicks) {
-				if (c.isLeft()) {
+				if (c.getClickType() == ClickType.REVEAL) {
 					field.changeBlockDirect(c.getPoint());
 				}
-				else {
+				else if (c.getClickType() == ClickType.FLAG) {
 					field.flagBlockDirect(c.getPoint());
 				}
 			}
