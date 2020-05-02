@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static game.BlockState.*;
+
 public class Field {
 	
 	private static final boolean SUPER_SAFE_FIRST_CLICK = false;
@@ -19,8 +21,8 @@ public class Field {
 	private int minesLeft;
 	private boolean created;
 	private boolean lost;
-	private boolean cheatMode;
-	private Block blocks[][];
+	private final boolean cheatMode;
+	private final Block[][] blocks;
 	
 	public Field(GameConfig config, boolean cheatMode) {
 		this.width = config.getWidth();
@@ -36,7 +38,7 @@ public class Field {
 		minesLeft = totalMines;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				blocks[i][j] = new Block(false);
+				blocks[i][j] = new Block();
 			}
 		}
 		created = false;
@@ -64,15 +66,13 @@ public class Field {
 	
 	public void FlagBlockDirect(Point point) {
 		synchronized (blocks) {
-			if (!blocks[point.x][point.y].isClear) {
-				if (blocks[point.x][point.y].isFlagged) {
-					blocks[point.x][point.y].isFlagged = false;
-					minesLeft++;
-				}
-				else {
-					blocks[point.x][point.y].isFlagged = true;
-					minesLeft--;
-				}
+			if (blocks[point.x][point.y].getState() == HIDDEN) {
+				blocks[point.x][point.y].setState(FLAGGED);
+				minesLeft--;
+			}
+			else if (blocks[point.x][point.y].getState() == FLAGGED) {
+				blocks[point.x][point.y].setState(HIDDEN);
+				minesLeft++;
 			}
 		}
 	}
@@ -96,7 +96,7 @@ public class Field {
 	public boolean checkWon() {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				if (!blocks[i][j].isClear && !blocks[i][j].isMine) {
+				if (blocks[i][j].getState() == HIDDEN && !blocks[i][j].isMine()) {
 					return false;
 				}
 			}
@@ -107,7 +107,7 @@ public class Field {
 	public boolean checkLost() {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				if (blocks[i][j].isClear && blocks[i][j].isMine) {
+				if (blocks[i][j].getState() == REVEALED && blocks[i][j].isMine()) {
 					return true;
 				}
 			}
@@ -125,10 +125,6 @@ public class Field {
 			}
 			return bd;
 		}
-	}
-
-	public int getMines() {
-		return totalMines;
 	}
 
 	public int getMinesLeft() {
@@ -159,28 +155,28 @@ public class Field {
 		
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				if (blocks[i][j].isMine) {
-					blocks[i][j].setNearbyMines(0);
+				if (blocks[i][j].isMine()) {
+					blocks[i][j].setNearbyMines((byte) 0);
 				}
 				else {
-					int neighbors = 0;
+					byte neighbors = 0;
 					int cellXMax = Math.min(i + 2, width);
 					int cellYMax = Math.min(j + 2, height);
 					for (int cellX = Math.max(i - 1, 0); cellX < cellXMax; cellX++) {
 						for (int cellY = Math.max(j - 1, 0); cellY < cellYMax; cellY++) {
-							if (blocks[cellX][cellY].isMine) {
+							if (blocks[cellX][cellY].isMine()) {
 								neighbors++;
 							}
-						}	
+						}
 					}
-					blocks[i][j].setNearbyMines(neighbors - (blocks[i][j].isMine ? 1 : 0));
+					blocks[i][j].setNearbyMines(neighbors);
 				}
 			}
 		}
 	}
 
 	private void safeSetup(Point point) {
-		ArrayList<Point> possiblePoints = new ArrayList<Point>();
+		ArrayList<Point> possiblePoints = new ArrayList<>();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				if (i != point.x || j != point.y) {
@@ -192,12 +188,14 @@ public class Field {
 		for (int i = 0; i < totalMines; i++) {
 			int index = rand.nextInt(possiblePoints.size());
 			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setMine(true);
+			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setState(HIDDEN);
+			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setNearbyMines((byte) 0);
 			possiblePoints.remove(index);
 		}
 	}
 
 	private void superSafeSetup(Point point) {
-		ArrayList<Point> possiblePoints = new ArrayList<Point>();
+		ArrayList<Point> possiblePoints = new ArrayList<>();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {		
 				if (Math.abs(i - point.x) > 1 || Math.abs(j - point.y) > 1) {
@@ -209,34 +207,37 @@ public class Field {
 		for (int i = 0; i < totalMines; i++) {
 			int index = rand.nextInt(possiblePoints.size());
 			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setMine(true);
+			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setState(HIDDEN);
+			blocks[possiblePoints.get(index).x][possiblePoints.get(index).y].setNearbyMines((byte) 0);
 			possiblePoints.remove(index);
 		}
 	}
 	
 	private void clearBlock(int x, int y) {
-		if (blocks[x][y].isClear) {
+		if (blocks[x][y].getState() == REVEALED) {
 			int flagged = 0;
 			int cellXMax = Math.min(x + 2, width);
 			int cellYMax = Math.min(y + 2, height);
 			for (int cellX = Math.max(x - 1, 0); cellX < cellXMax; cellX++) {
 				for (int cellY = Math.max(y - 1, 0); cellY < cellYMax; cellY++) {
-					if (blocks[cellX][cellY].isFlagged) {
+					if (blocks[cellX][cellY].getState() == FLAGGED) {
 						flagged++;
 					}
-				}	
+				}
 			}
 			if (flagged == blocks[x][y].getNearbyMines()) {
 				for (int cellX = Math.max(x - 1, 0); cellX < cellXMax; cellX++) {
 					for (int cellY = Math.max(y - 1, 0); cellY < cellYMax; cellY++) {
-						if (!blocks[cellX][cellY].isClear) {
+						if (blocks[cellX][cellY].getState() != REVEALED) {
 							clearBlock(cellX, cellY);
 						}
-					}	
+					}
 				}
 			}
 		}
-		else if (!blocks[x][y].isFlagged) {
-			if (blocks[x][y].clear()) {
+		else if (blocks[x][y].getState() != FLAGGED) {
+			blocks[x][y].setState(REVEALED);
+			if (blocks[x][y].isMine()) {
 				lost = true;
 			}
 			else if (blocks[x][y].getNearbyMines() == 0) {
@@ -244,7 +245,7 @@ public class Field {
 				int cellYMax = Math.min(y + 2, height);
 				for (int cellX = Math.max(x - 1, 0); cellX < cellXMax; cellX++) {
 					for (int cellY = Math.max(y - 1, 0); cellY < cellYMax; cellY++) {
-						if (!blocks[cellX][cellY].isClear) {
+						if (blocks[cellX][cellY].getState() != REVEALED) {
 							clearBlock(cellX, cellY);
 						}
 					}
@@ -258,7 +259,7 @@ public class Field {
 			bw.write("Time in milliseconds: " + totalTime + "\n");
 			for (int i = 0; i < width; i++) {
 				for (int j = 0; j < height; j++) {
-					if (blocks[i][j].isMine) {
+					if (blocks[i][j].isMine()) {
 						bw.write('M');
 					}
 					else {

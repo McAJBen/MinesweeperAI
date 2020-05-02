@@ -1,4 +1,3 @@
-import game.Block
 import game.Game
 import game.GameConfig
 import game.GameController
@@ -8,8 +7,6 @@ object Main {
 }
 
 fun main() {
-
-	Block.loadImages()
 
 	val controller = GameController.prompt()
 
