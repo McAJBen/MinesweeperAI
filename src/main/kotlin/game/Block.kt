@@ -33,6 +33,12 @@ class Block {
 			FLAGGED -> BlockData.FLAGGED
 		}
 
+	fun reset() {
+		nearbyMines = 0
+		isMine = false
+		state = HIDDEN
+	}
+
 	fun paint(g: Graphics, showMines: Boolean, cheat: Boolean, x: Int, y: Int, width: Int, height: Int) {
 		if (state == REVEALED && !isMine) {
 			g.color = BLANK_COLOR

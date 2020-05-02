@@ -98,7 +98,7 @@ public class Game {
 			checkDone();
 		}
 		while (gameMouse.hasRightClick()) {
-			field.FlagBlock(gameMouse.getPoint(), fieldPanel.getSize());
+			field.flagBlock(gameMouse.getPoint(), fieldPanel.getSize());
 		}
 		if (controller == GameController.AI) {
 			LinkedList<Click> clicks = ai.solve(field.getBoard(), field.getMinesLeft());
@@ -107,7 +107,7 @@ public class Game {
 					field.changeBlockDirect(c.getPoint());
 				}
 				else {
-					field.FlagBlockDirect(c.getPoint());
+					field.flagBlockDirect(c.getPoint());
 				}
 			}
 			checkDone();
@@ -144,6 +144,13 @@ public class Game {
 			worstTime = totalTime;
 			field.save(totalTime);
 		}
+
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+
 		startTime = System.currentTimeMillis();
 		field.reset();
 		if (controller == GameController.AI) {
