@@ -24,6 +24,8 @@ public class Game {
 	private GameMouseListener gameMouse;
 	private Field field;
 	private FieldView fieldView;
+	private long startTime;
+	private long worstTime = 0;
 	private int gamesComplete = 0;
 	private int gamesWon = 0;
 	
@@ -48,6 +50,7 @@ public class Game {
         statPanel = new StatPanel(field, this);
         frame.add(statPanel, BorderLayout.NORTH);
         frame.setVisible(true);
+        startTime = System.currentTimeMillis();
 	}
 	
 	public synchronized void start() {
@@ -136,18 +139,19 @@ public class Game {
 
 	private void reset() {
 		gamesComplete++;
+		long totalTime = System.currentTimeMillis() - startTime;
+		if (totalTime > worstTime) {
+			worstTime = totalTime;
+			field.save(totalTime);
+		}
+		startTime = System.currentTimeMillis();
 		field.reset();
 		if (useAI) {
 			ai.reset();
 		}
 	}
 
-	public void copyField(Game game) {
-		field.copy(game.field);
-		
-	}
-
-	public boolean finished() {
-		return !field.hasCreated();
+	public long getTime() {
+		return System.currentTimeMillis() - startTime;
 	}
 }

@@ -3,6 +3,9 @@ package game;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -250,19 +253,22 @@ public class Field {
 		}
 	}
 
-	public synchronized void copy(Field f) {
-		lost = f.lost;
-		minesLeft = f.minesLeft;
-		blocks = new Block[f.width][f.height];
-		for (int i = 0; i < f.width; i++) {
-			for (int j = 0; j < f.height; j++) {
-				blocks[i][j] = f.blocks[i][j];
+	public void save(long totalTime) {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(totalTime + ".txt"))) {
+			bw.write("Time in milliseconds: " + totalTime + "\n");
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					if (blocks[i][j].isMine) {
+						bw.write('M');
+					}
+					else {
+						bw.write('-');
+					}
+				}
+				bw.write('\n');
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		created = f.created;
-	}
-	
-	public boolean hasCreated() {
-		return created;
 	}
 }
