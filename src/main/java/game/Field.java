@@ -22,10 +22,10 @@ public class Field {
 	private boolean cheatMode;
 	private Block blocks[][];
 	
-	public Field(int width, int height, int mines, boolean cheatMode) {
-		this.width = width;
-		this.height = height;
-		this.totalMines = mines;
+	public Field(GameConfig config, boolean cheatMode) {
+		this.width = config.getWidth();
+		this.height = config.getHeight();
+		this.totalMines = config.getMines();
 		blocks = new Block[width][height];
 		this.cheatMode = cheatMode;
 		reset();

@@ -15,7 +15,7 @@ public class Game {
 	private static final int FRAME_TICK = 50;
 	private static final int MOVE_TICK = 0;
 	
-	private final boolean useAI;
+	private final GameController controller;
 	private AI ai;
 	private Thread runThread;
 	private Thread paintThread;
@@ -29,10 +29,10 @@ public class Game {
 	private int gamesComplete = 0;
 	private int gamesWon = 0;
 	
-	public Game(boolean runAI, int width, int height, int mines) {
-		useAI = runAI;
+	public Game(GameController controller, GameConfig config) {
+		this.controller = controller;
 		gameMouse = new GameMouseListener();
-		field = new Field(width, height, mines, useAI);
+		field = new Field(config, controller == GameController.AI);
 		JFrame frame = new JFrame(WINDOW_NAME);
 		frame.setSize(SCREEN_SIZE.width, SCREEN_SIZE.height);
 		frame.setResizable(true);
@@ -40,9 +40,9 @@ public class Game {
 		frame.setLocationRelativeTo(null);
 		frame.setLayout(new BorderLayout());
 		frame.setFont(FONT);
-		if (useAI) {
-			fieldView = new FieldView(width, height);
-			ai = new AI(width, height, fieldView);
+		if (controller == GameController.AI) {
+			fieldView = new FieldView(config.getWidth(), config.getHeight());
+			ai = new AI(config.getWidth(), config.getHeight(), fieldView);
 		}
 		fieldPanel = new FieldPanel(field, fieldView);
 		fieldPanel.addMouseListener(gameMouse);
@@ -100,7 +100,7 @@ public class Game {
 		while (gameMouse.hasRightClick()) {
 			field.FlagBlock(gameMouse.getPoint(), fieldPanel.getSize());
 		}
-		if (useAI) {
+		if (controller == GameController.AI) {
 			LinkedList<Click> clicks = ai.solve(field.getBoard(), field.getMinesLeft());
 			for (Click c: clicks) {
 				if (c.isLeft()) {
@@ -146,7 +146,7 @@ public class Game {
 		}
 		startTime = System.currentTimeMillis();
 		field.reset();
-		if (useAI) {
+		if (controller == GameController.AI) {
 			ai.reset();
 		}
 	}
