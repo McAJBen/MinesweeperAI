@@ -6,7 +6,8 @@ import java.awt.event.MouseListener
 
 class GameMouseListener(
 	private val fieldPanel: FieldPanel,
-	private val config: GameConfig) : MouseListener {
+	private val config: GameConfig
+) : MouseListener {
 
 	private val clicks = mutableListOf<Click>()
 
@@ -33,12 +34,11 @@ class GameMouseListener(
 			else -> return
 		}
 
-		clicks.add(
-			Click(
-				clickType,
-				pointToCoordinate(e.point)
-			)
-		)
+		val point = pointToCoordinate(e.point)
+
+		synchronized(clicks) {
+			clicks.add(Click(clickType, point))
+		}
 	}
 
 	override fun mouseReleased(e: MouseEvent) {}
