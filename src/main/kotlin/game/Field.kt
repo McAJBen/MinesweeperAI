@@ -5,9 +5,7 @@ import game.BlockState.*
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Point
-import java.io.BufferedWriter
-import java.io.FileWriter
-import java.io.IOException
+import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -59,11 +57,7 @@ class Field(
 		}
 	}
 
-	fun flagBlock(point: Point, dimension: Dimension) = synchronized(blocks) {
-		flagBlockDirect(pointToCoordinate(point, dimension))
-	}
-
-	fun flagBlockDirect(point: Point) = synchronized(blocks) {
+	fun flagBlock(point: Point) = synchronized(blocks) {
 		when (blocks[point.x][point.y].state) {
 			HIDDEN -> {
 				blocks[point.x][point.y].state = FLAGGED
@@ -77,11 +71,7 @@ class Field(
 		}
 	}
 
-	fun changeBlock(point: Point, dimension: Dimension) = synchronized(blocks) {
-		changeBlockDirect(pointToCoordinate(point, dimension))
-	}
-
-	fun changeBlockDirect(point: Point) = synchronized(blocks) {
+	fun changeBlock(point: Point) = synchronized(blocks) {
 		if (state == FieldState.RESET) {
 			state = FieldState.GENERATED
 			plantMines(point)
@@ -106,31 +96,20 @@ class Field(
 	}
 
 	fun save(totalTime: Long) {
-		try {
-			BufferedWriter(FileWriter("$totalTime.txt")).use { bw ->
-				bw.write("Time in milliseconds: $totalTime\n")
-				for (i in 0 until config.width) {
-					for (j in 0 until config.height) {
-						if (blocks[i][j].isMine) {
-							bw.write('M'.toInt())
-						} else {
-							bw.write('-'.toInt())
-						}
-					}
-					bw.write('\n'.toInt())
-				}
-			}
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
-	}
+		val sb = StringBuffer("Time in milliseconds: $totalTime\n")
 
-	private fun pointToCoordinate(p: Point, size: Dimension): Point {
-		val pixelW = size.width.toDouble() / config.width
-		val pixelH = size.height.toDouble() / config.height
-		val x = (p.x / pixelW).toInt()
-		val y = (p.y / pixelH).toInt()
-		return Point(x, y)
+		for (i in 0 until config.width) {
+			for (j in 0 until config.height) {
+				sb.append(when(blocks[i][j].isMine) {
+					true -> 'M'
+					false -> '-'
+				})
+			}
+			sb.append('\n')
+		}
+
+		val file = File("$totalTime.txt")
+		file.writeText(sb.toString())
 	}
 
 	private fun plantMines(initialPoint: Point) {

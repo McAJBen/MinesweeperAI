@@ -3,7 +3,7 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import ai.AI;
@@ -31,7 +31,6 @@ public class Game {
 	
 	public Game(GameController controller, GameConfig config) {
 		this.controller = controller;
-		gameMouse = new GameMouseListener();
 		field = new Field(config, controller == GameController.AI);
 		JFrame frame = new JFrame(WINDOW_NAME);
 		frame.setSize(SCREEN_SIZE.width, SCREEN_SIZE.height);
@@ -45,6 +44,7 @@ public class Game {
 			ai = new AI(config.getWidth(), config.getHeight(), fieldView);
 		}
 		fieldPanel = new FieldPanel(field, fieldView);
+		gameMouse = new GameMouseListener(fieldPanel, config);
 		fieldPanel.addMouseListener(gameMouse);
         frame.add(fieldPanel);
         statPanel = new StatPanel(field, this);
@@ -93,29 +93,24 @@ public class Game {
 	}
 
 	public void move() {
-		while (gameMouse.hasLeftClick()) {
-			field.changeBlock(gameMouse.getPoint(), fieldPanel.getSize());
-			checkDone();
+		List<Click> clicks = null;
+
+		if (controller == GameController.Player) {
+			clicks = gameMouse.getClicks();
+		} else if (controller == GameController.AI) {
+			clicks = ai.solve(field.getBoard(), field.getMinesLeft());
 		}
-		while (gameMouse.hasRightClick()) {
-			field.flagBlock(gameMouse.getPoint(), fieldPanel.getSize());
-		}
-		if (controller == GameController.AI) {
-			LinkedList<Click> clicks = ai.solve(field.getBoard(), field.getMinesLeft());
-			for (Click c: clicks) {
+
+		if (clicks != null && !clicks.isEmpty()) {
+			for (Click c : clicks) {
 				if (c.getClickType() == ClickType.REVEAL) {
-					field.changeBlockDirect(c.getPoint());
-				}
-				else if (c.getClickType() == ClickType.FLAG) {
-					field.flagBlockDirect(c.getPoint());
+					field.changeBlock(c.getPoint());
+				} else if (c.getClickType() == ClickType.FLAG) {
+					field.flagBlock(c.getPoint());
 				}
 			}
 			checkDone();
 		}
-    }
-
-	public GameMouseListener getGameMouse() {
-    	return gameMouse;
     }
 
 	public String getScore() {
@@ -124,17 +119,14 @@ public class Game {
 				gamesWon, gamesComplete);
 	}
 	
-	private boolean checkDone() {
+	private void checkDone() {
 		if (field.checkWon()) {
 			gamesWon++;
 			reset();
-			return true;
 		}
 		else if (field.checkLost()) {
 			reset();
-			return true;
 		}
-		return false;
 	}
 
 	private void reset() {

@@ -20,9 +20,9 @@ public class RuleSet {
 			for (int i = 0; i < bases.size(); i++) {
 				for (int j = 0; j < bases.size(); j++) {
 					if (i != j && bases.get(i).contains(bases.get(j))
-							&& !bases.get(j).isEmpty()) {
+							&& !bases.get(j).getPoints().isEmpty()) {
 						change = true;
-						bases.get(i).subtractBy(bases.get(j));
+						bases.get(i).minusAssign(bases.get(j));
 					}
 				}
 			}
@@ -95,7 +95,7 @@ public class RuleSet {
 	
 	private void removeEmpty() {
 		for (int i = 0; i < bases.size(); i++) {
-			if (bases.get(i).isEmpty()) {
+			if (bases.get(i).getPoints().isEmpty()) {
 				bases.remove(i);
 				i--;
 			}
