@@ -44,6 +44,9 @@ class Field(
 	fun paint(g: Graphics, size: Dimension) {
 		val pixelW = size.width.toDouble() / config.width
 		val pixelH = size.height.toDouble() / config.height
+		val w = pixelW.toInt() + 1
+		val h = pixelH.toInt() + 1
+
 		forEachPoint { i, j ->
 			blocks[i][j].paint(
 				g,
@@ -51,8 +54,8 @@ class Field(
 				cheatMode,
 				(i * pixelW).toInt(),
 				(j * pixelH).toInt(),
-				pixelW.toInt(),
-				pixelH.toInt()
+				w,
+				h
 			)
 		}
 	}
@@ -113,9 +116,9 @@ class Field(
 	}
 
 	private fun plantMines(initialPoint: Point) {
-		val possibleMines = when {
-			SUPER_SAFE_FIRST_CLICK -> getSuperSafeMines(initialPoint)
-			else -> getSafeMines(initialPoint)
+		val possibleMines = when(SUPER_SAFE_FIRST_CLICK) {
+			true -> getSuperSafeMines(initialPoint)
+			false -> getSafeMines(initialPoint)
 		}.toMutableList()
 
 		for (i in 0 until config.mines) {

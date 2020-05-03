@@ -1,12 +1,11 @@
 package game;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
-
-import javax.swing.JFrame;
 import ai.AI;
+import ai.AIView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 
 public class Game {
 	private static final String WINDOW_NAME = "Minesweeper";
@@ -23,7 +22,7 @@ public class Game {
 	private StatPanel statPanel;
 	private GameMouseListener gameMouse;
 	private Field field;
-	private FieldView fieldView;
+	private AIView aiView;
 	private long startTime;
 	private long worstTime = 0;
 	private int gamesComplete = 0;
@@ -40,10 +39,10 @@ public class Game {
 		frame.setLayout(new BorderLayout());
 		frame.setFont(FONT);
 		if (controller == GameController.AI) {
-			fieldView = new FieldView(config.getWidth(), config.getHeight());
-			ai = new AI(config.getWidth(), config.getHeight(), fieldView);
+			aiView = new AIView(config);
+			ai = new AI(config.getWidth(), config.getHeight(), aiView);
 		}
-		fieldPanel = new FieldPanel(field, fieldView);
+		fieldPanel = new FieldPanel(field, aiView);
 		gameMouse = new GameMouseListener(fieldPanel, config);
 		fieldPanel.addMouseListener(gameMouse);
         frame.add(fieldPanel);

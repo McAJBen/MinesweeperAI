@@ -1,25 +1,25 @@
 package ai;
-import java.awt.Point;
+import game.BlockData;
+import game.Click;
+import game.ClickType;
+
+import java.awt.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
-import game.BlockData;
-import game.Click;
-import game.ClickType;
-import game.FieldView;
 
 public class AI {
 	
-	private FieldView fieldView;
+	private AIView aiView;
 	
-	public AI(int width, int height, FieldView fieldView) {
-		this.fieldView = fieldView;
+	public AI(int width, int height, AIView aiView) {
+		this.aiView = aiView;
 		reset();
 	}
 	
 	public LinkedList<Click> solve(BlockData[][] blockData, int minesLeft) {
-		fieldView.checkMemory(blockData);
+		aiView.checkMemory(blockData);
 		LinkedList<Click> clickPoints = new LinkedList<>();
 		
 		if (isFirstClick(blockData)) {
@@ -27,7 +27,7 @@ public class AI {
 			return clickPoints;
 		}
 		
-		RuleSet ruleSet = fieldView.getRuleSet(minesLeft);
+		RuleSet ruleSet = aiView.getRuleSet(minesLeft);
 		
 		clickPoints.addAll(ruleSet.solve());
 		if (!clickPoints.isEmpty()) {
@@ -345,6 +345,6 @@ public class AI {
 
 
 	public void reset() {
-		fieldView.reset();
+		aiView.reset();
 	}
 }

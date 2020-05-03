@@ -1,16 +1,17 @@
 package ai;
 
-import java.awt.Point;
-import java.util.LinkedList;
-
 import game.Click;
 import game.ClickType;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RuleSet {
 
 	private LinkedList<Rule> bases;
 	
-	public RuleSet(LinkedList<Rule> rules) {
+	public RuleSet(List<Rule> rules) {
 		bases = new LinkedList<>();
 		bases.addAll(rules);
 		removeDuplicates();
