@@ -81,7 +81,7 @@ public class AI {
 		points = new LinkedList<>();
 		for (int i = 0; i < matrixColumns.size(); i++) {
 			for (int j = 0; j < rules.size(); j++) {
-				matrix[j][i] = matrixColumns.get(i).column[j];
+				matrix[j][i] = matrixColumns.get(i).getColumn()[j];
 			}
 			points.add(matrixColumns.get(i).getPoints());
 		}
@@ -228,11 +228,11 @@ public class AI {
 					for (int j = 1; j <= points.get(curIndex).size(); j++) {
 						int[] b = list.get(i).clone();
 						b[curIndex] = j;
-						if (BasicRule.follows(basicRules, toBeDone, b)) {
+						if (BasicRule.Companion.follows(basicRules, toBeDone, b)) {
 							list.add(b);
 						}
 					}
-					if (!BasicRule.follows(basicRules, toBeDone, list.get(i))) {
+					if (!BasicRule.Companion.follows(basicRules, toBeDone, list.get(i))) {
 						list.remove(i);
 						i--;
 						prevListSize--;
@@ -248,7 +248,7 @@ public class AI {
 							int newMines = br.getMines() - br.getMines(toBeDone, list.get(i));
 							if (newMines >= 0 && newMines <= points.get(curIndex).size()) {
 								list.get(i)[curIndex] = newMines;
-								if (!BasicRule.follows(basicRules, toBeDone, list.get(i))) {
+								if (!BasicRule.Companion.follows(basicRules, toBeDone, list.get(i))) {
 									list.remove(i);
 									i--;
 								}
