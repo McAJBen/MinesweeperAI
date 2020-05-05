@@ -34,7 +34,7 @@ public class AI {
 			return clickPoints;
 		}
 		
-		clickPoints.addAll(findProbabilities(ruleSet.getRules()));
+		clickPoints.addAll(findProbabilities(new LinkedList<>(ruleSet.getRules())));
 		return clickPoints;
 	}
 
